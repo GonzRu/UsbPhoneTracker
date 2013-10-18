@@ -80,6 +80,15 @@ namespace UsbPhoneTracker.Mac
 						device.VendorId,
 						device.ProductId,
 						serialNumber);
+
+					try
+					{
+						RequestHelper.CheckInDevice (serialNumber, MacAddressHelper.GetMd5HashFromAllMACAddress ());
+					}
+					catch
+					{
+						Console.WriteLine ("Error");
+					}
 				}
 				else
 				{
