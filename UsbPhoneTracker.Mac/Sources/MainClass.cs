@@ -27,9 +27,10 @@ namespace UsbPhoneTracker.Mac
 
 		static void Main(String[] args)
 		{
+			Console.WriteLine (MacAddressHelper.GetMd5HashFromAllMACAddress ());
 			if (args.Length == 0) {
 				Console.WriteLine ("Не найден адрес сервера");
-				return;
+				ServerUrl = "127.0.0.1";
 			} else {
 				ServerUrl = args [0];
 				Console.WriteLine (ServerUrl);
@@ -92,7 +93,8 @@ namespace UsbPhoneTracker.Mac
 
 					try
 					{
-						RequestHelper.CheckInDevice (ServerUrl, serialNumber, MacAddressHelper.GetMd5HashFromAllMACAddress ());
+						var macHash = MacAddressHelper.GetMd5HashFromAllMACAddress ();
+						RequestHelper.CheckInDevice (ServerUrl, serialNumber, macHash);
 					}
 					catch
 					{
