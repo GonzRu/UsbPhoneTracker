@@ -11,6 +11,8 @@ namespace UsbPhoneTracker.Mac
 
 		static ISet<String> EmptySerials = new HashSet<String>();
 
+		static string ServerUrl;
+
 		static ISet<String> ConnectedDevicesWithIds(DeviceIds ids)
 		{
 			try
@@ -25,10 +27,17 @@ namespace UsbPhoneTracker.Mac
 
 		static void Main(String[] args)
 		{
+			if (args.Length == 0) {
+				Console.WriteLine ("Не найден адрес сервера");
+				return;
+			} else {
+				ServerUrl = args [0];
+				Console.WriteLine (ServerUrl);
+			}
+
 			UsbNotifier.UsbChanged += HandleUsbChanged;
 			UsbNotifier.Start();
-			Console.ReadLine();
-			UsbNotifier.Stop();
+			while (true);
 		}
 
 		static String GetSerialNumber(Dictionary<string, string> deviceInfo)
@@ -83,7 +92,7 @@ namespace UsbPhoneTracker.Mac
 
 					try
 					{
-						RequestHelper.CheckInDevice (serialNumber, MacAddressHelper.GetMd5HashFromAllMACAddress ());
+						RequestHelper.CheckInDevice (ServerUrl, serialNumber, MacAddressHelper.GetMd5HashFromAllMACAddress ());
 					}
 					catch
 					{

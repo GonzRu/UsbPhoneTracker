@@ -7,10 +7,9 @@ namespace UsbPhoneTracker.Mac
 	{
 		private const string SERVER_API_URL = "http://localhost:3000/api/checkin/";
 
-		static public void CheckInDevice (string deviceId, string macAddress)
+		static public void CheckInDevice (string serverUrl, string deviceId, string macAddress)
 		{
-			string requestString = SERVER_API_URL + macAddress + "-" + deviceId;
-			Console.WriteLine (requestString);
+			string requestString = serverUrl + ":3000/api/checkin/" + macAddress + "-" + deviceId;
 			WebRequest webRequest = WebRequest.Create (requestString);
 
 			webRequest.GetResponse ();
