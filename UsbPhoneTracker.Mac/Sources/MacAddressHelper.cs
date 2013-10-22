@@ -2,36 +2,34 @@ using System;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Text;
+using System.Net.Sockets;
 
 namespace UsbPhoneTracker.Mac
 {
 	public class MacAddressHelper
 	{
-		static public string GetMd5HashFromAllMACAddress ()
+		static public string GetMacAddress ()
 		{
-			string macAddresses = "";
-
 			foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())
 			{
-				if (!String.IsNullOrEmpty (nic.GetPhysicalAddress ().ToString ()))
-					macAddresses += nic.GetPhysicalAddress ();
+				if (!String.IsNullOrEmpty (nic.GetPhysicalAddress ().ToString ())) {
+
+					foreach (UnicastIPAddressInformation ip in nic.GetIPProperties().UnicastAddresses)
+					{
+						if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
+						{
+							if (!String.IsNullOrEmpty (ip.Address.ToString ())) {
+								if (ip.Address.ToString ().Substring (0, 8) == "192.168.") {
+									Console.WriteLine (ip.Address.ToString ());
+									return nic.GetPhysicalAddress ().ToString ();
+								}
+							}
+						}
+					}
+				}
 			}
 
-			return GetMd5FromString (macAddresses);
-		}
-
-		static private string GetMd5FromString (string str)
-		{
-			MD5 md5 = System.Security.Cryptography.MD5.Create();
-			byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(str);
-			byte[] hashBytes = md5.ComputeHash(inputBytes);
-
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < hashBytes.Length; i++)
-			{
-					sb.Append(hashBytes[i].ToString("X2"));
-			}
-			return sb.ToString();
+			return String.Empty;
 		}
 	}
 }
