@@ -19,10 +19,8 @@ namespace UsbPhoneTracker.Mac
 						if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
 						{
 							if (!String.IsNullOrEmpty (ip.Address.ToString ())) {
-								if (ip.Address.ToString ().Substring (0, 8) == "192.168.") {
-									Console.WriteLine (ip.Address.ToString ());
-									return nic.GetPhysicalAddress ().ToString ();
-								}
+								Console.WriteLine (ip.Address.ToString ());
+								return nic.GetPhysicalAddress ().ToString ();
 							}
 						}
 					}

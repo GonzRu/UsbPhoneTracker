@@ -27,18 +27,18 @@ namespace UsbPhoneTracker.Mac
 
 		static void Main(String[] args)
 		{
-			Console.WriteLine (MacAddressHelper.GetMacAddress ());
+			Console.WriteLine ("MAC-адрес: " + MacAddressHelper.GetMacAddress ());
 			if (args.Length == 0) {
-				Console.WriteLine ("Не найден адрес сервера");
+				Console.WriteLine ("В аргументах программы не найден адрес сервера.");
 				ServerUrl = "127.0.0.1";
 			} else {
 				ServerUrl = args [0];
-				Console.WriteLine (ServerUrl);
 			}
+
+			Console.WriteLine ("В качестве сервера выступает: " + ServerUrl);
 
 			UsbNotifier.UsbChanged += HandleUsbChanged;
 			UsbNotifier.Start();
-			while (true);
 		}
 
 		static String GetSerialNumber(Dictionary<string, string> deviceInfo)
@@ -93,8 +93,12 @@ namespace UsbPhoneTracker.Mac
 
 					try
 					{
-						var macHash = MacAddressHelper.GetMacAddress ();
-						RequestHelper.CheckInDevice (ServerUrl, serialNumber, macHash);
+						var mac = MacAddressHelper.GetMacAddress ();
+						if (String.IsNullOrEmpty(mac)) {
+							Console.WriteLine ("Не найдено активного сетевого интерфейса");
+							throw new Exception ("Не найдено активного сетевого интерфейса");
+						}
+						RequestHelper.CheckInDevice (ServerUrl, serialNumber, mac);
 					}
 					catch
 					{
