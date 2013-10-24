@@ -12,6 +12,7 @@ namespace UsbPhoneTracker.Mac
 		static ISet<String> EmptySerials = new HashSet<String>();
 
 		static string ServerUrl;
+		static string MacAddress;
 
 		static ISet<String> ConnectedDevicesWithIds(DeviceIds ids)
 		{
@@ -27,15 +28,24 @@ namespace UsbPhoneTracker.Mac
 
 		static void Main(String[] args)
 		{
-			Console.WriteLine ("MAC-адрес: " + MacAddressHelper.GetMacAddress ());
+			MacAddress = MacAddressHelper.GetMacAddress ();
+			Console.WriteLine ("MAC-адрес: " + MacAddress);
+
 			if (args.Length == 0) {
 				Console.WriteLine ("В аргументах программы не найден адрес сервера.");
 				ServerUrl = "127.0.0.1";
 			} else {
 				ServerUrl = args [0];
 			}
-
 			Console.WriteLine ("В качестве сервера выступает: " + ServerUrl);
+
+			try
+			{
+				RequestHelper.CheckInUser (ServerUrl, MacAddress);
+			}
+			catch {
+				Console.WriteLine ("Не удалось вызвать api-метод: chechinuser");
+			}
 
 			UsbNotifier.UsbChanged += HandleUsbChanged;
 			UsbNotifier.Start();
@@ -102,7 +112,7 @@ namespace UsbPhoneTracker.Mac
 					}
 					catch
 					{
-						Console.WriteLine ("Error");
+						Console.WriteLine ("Не удалось вызвать api-метод: checkindevice");
 					}
 				}
 				else
