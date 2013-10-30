@@ -8,8 +8,13 @@ namespace UsbPhoneTracker.Mac
 {
 	public class MacAddressHelper
 	{
+		static private string MacAddress = null;
+
 		static public string GetMacAddress ()
 		{
+			if (MacAddress != null)
+				return MacAddress;
+
 			foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())
 			{
 				if (!String.IsNullOrEmpty (nic.GetPhysicalAddress ().ToString ())) {
@@ -20,15 +25,22 @@ namespace UsbPhoneTracker.Mac
 						{
 							if (!String.IsNullOrEmpty (ip.Address.ToString ())) {
 								Console.WriteLine (ip.Address.ToString ());
-								return nic.GetPhysicalAddress ().ToString ();
+								MacAddress = nic.GetPhysicalAddress ().ToString ();
+								return MacAddress;
 							}
 						}
 					}
 				}
 			}
 
-			return String.Empty;
+			throw new ActiveNetworkInterfaceNotFoundException ();
 		}
 	}
-}
 
+	public class ActiveNetworkInterfaceNotFoundException : Exception
+	{
+		public ActiveNetworkInterfaceNotFoundException() : base() {}
+
+		public ActiveNetworkInterfaceNotFoundException(string message) : base(message) {}
+	}
+}

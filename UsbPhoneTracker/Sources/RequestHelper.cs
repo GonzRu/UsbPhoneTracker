@@ -5,24 +5,64 @@ namespace UsbPhoneTracker.Mac
 {
 	public class RequestHelper
 	{
-		static public void CheckInDevice (string serverUrl, string deviceId, string macAddress)
-		{
-			string requestString = "http://" + serverUrl + ":3000/api/checkindevice/" + macAddress + "-" + deviceId;
-			Console.WriteLine (requestString);
-			WebRequest webRequest = WebRequest.Create (requestString);
+		static private string ServerUrl = null;
 
-			webRequest.GetResponse ();
-			webRequest.Abort ();
+		static public void SetServerUrl (string serverUrl)
+		{
+			if (String.IsNullOrEmpty (serverUrl))
+				throw new ArgumentException ();
+
+			ServerUrl = serverUrl;
 		}
 
-		static public void CheckInUser (string serverUrl, string macAddress)
+		static public void CheckInDevice (string deviceId, string macAddress)
 		{
-			string requestString = "http://" + serverUrl + ":3000/api/checkinuser/" + macAddress;
-			Console.WriteLine (requestString);
-			WebRequest webRequest = WebRequest.Create (requestString);
+			if (String.IsNullOrEmpty (ServerUrl))
+				throw new ServerUrlNotSetException ();
 
-			webRequest.GetResponse ();
-			webRequest.Abort ();
+			string requestString = "http://" + ServerUrl + ":3000/api/checkindevice/" + macAddress + "-" + deviceId;
+
+			SendRequest (requestString);
 		}
+
+		static public void CheckInUser (string macAddress)
+		{
+			if (String.IsNullOrEmpty (ServerUrl))
+				throw new ServerUrlNotSetException ();
+
+			string requestString = "http://" + ServerUrl + ":3000/api/checkinuser/" + macAddress;
+
+			SendRequest (requestString);
+		}
+
+		static private void SendRequest (string requestString)
+		{
+			try
+			{
+				WebRequest webRequest = WebRequest.Create (requestString);
+
+				webRequest.GetResponse ();
+				webRequest.Abort ();
+			}
+			catch (ServerUrlNotSetException)
+			{
+				Console.WriteLine ("Не задан адрес сервера.");
+			}
+			catch (NotSupportedException)
+			{
+				Console.WriteLine ("Неправильно сформирована строка запроса");
+			}
+			catch (WebException)
+			{
+				Console.WriteLine ("Сервер не ожидает запроса. Соединение сброшено.");
+			}
+		}
+	}
+
+	public class ServerUrlNotSetException : Exception
+	{
+		public ServerUrlNotSetException() : base() {}
+
+		public ServerUrlNotSetException(string message) : base(message) {}
 	}
 }

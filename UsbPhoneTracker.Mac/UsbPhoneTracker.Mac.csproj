@@ -40,6 +40,7 @@
     <Compile Include="Sources\MainClass.cs" />
     <Compile Include="Sources\DeviceInfoFinder.cs" />
     <Compile Include="Sources\MacAddressHelper.cs" />
+    <Compile Include="Sources\UsbHandlerHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
